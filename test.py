@@ -37,13 +37,15 @@ test(main.tokenize('((foo bar baz))'), ['(', '(', 'foo', 'bar', 'baz', ')', ')']
 test(main.tokenize('((foo bar) baz)'), ['(', '(', 'foo', 'bar', ')', 'baz', ')'])
 
 # parse
-test(main.parse(['(', 'foo', 'bar', ')'], []), [['foo', 'bar']]) # 12
-test_print(main.parse(['(', 'foo', 'bar', ')'], []))  # 12
-test(main.parse(['(', '(', 'bar', ')'], []), [])  # 13
-test_print(main.parse(['(', '(', 'bar', ')'], []))  # 13
-#test(main.parse(['(', '(', 'foo', 'bar', ')', 'baz', ')'], []), [['foo', 'bar'], 'baz']) # 14
+test(main.parse(['(', '+', 'foo', 'bar', ')']), ['+', 'foo', 'bar'])  # 12
+test(main.parse(['(', '(', 'foo', 'bar', ')', 'baz', ')']), [['foo', 'bar'], 'baz']) # 13
+test(main.parse(['(', '+', '(', '+', '1', '2', ')', '3', ')']), ['+', ['+', 1, 2], 3]) # 14
 
 # eval
-test(main.eval([]), [])
+test(main.eval(['+', 1, 2]), 3)  # 15
+test(main.eval(['+', ['+', 1, 2], 3]), 6)  # 16
+test(main.eval(['+', ['-', 1, 2], 3]), 2)  # 17
+test(main.eval(['*', ['-', 1, 2], 3]), -3)  # 18
+test(main.eval(['/', ['+', 1, 2], 3]), 1)  # 19
 
 

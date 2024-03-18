@@ -43,39 +43,98 @@ def tokenize(input_str):
     return tokens
 
 
-def parse(tokens, ast):
-    # check parenthesis '()' number
-    if tokens.count('(') != tokens.count(')'):
-        #print("ERROR: No match () number", end=' ')
-        return []
+# Reference: https://samurait.hatenablog.com/entry/lisp_interpreter_implementation_in_python
+def parse(tokens):
+    if len(tokens) == 0:
+        raise SyntaxError("Unexpected EOF while reading")
+    token = tokens.pop(0)
+    if token == '(':
+        L = []
+        while tokens[0] != ')':
+            L.append(parse(tokens))
+        tokens.pop(0)
+        return L
+    elif token == ')':
+        raise SyntaxError("Unexpected")
+    else:
+        return atom(token)
 
-    ast_tmp = []
-    for i, token in enumerate(tokens):
-        if token == '(':
-            parse(tokens[i+1:], ast)
-            continue
+def atom(token):
+    try: return int(token)
+    except ValueError:
+        try:
+            return float(token)
+        except:
+            return Symbol(token)
 
-        if token == ')':
-            break
 
-        ast_tmp.append(token)
+Symbol = str
+Number = (int, float)
 
-    ast.append(ast_tmp)
-    return ast
+#def parse(tokens):
+#    # Check parenthesis '()' number
+#    if tokens.count('(') != tokens.count(')'):
+#        #print("ERROR: No match () number", end=' ')
+#        return []
+#
+#    ast = []
+#    i = 0
+#    max = len(tokens)
+#    while i < max:
+#        if tokens[i] == '(':
+#            ast_tmp, count = parse(tokens[i+1:])
+#            ast.append(ast_tmp)
+#            i += count + 1
+#            continue
+#
+#        if tokens[i] == ')':
+#            i += 1
+#            break
+#
+#        ast.append(tokens[i])
+#        i += 1
+#
+#    return ast, i
 
 
 # TODO: implement
 def eval(ast):
-    if len(ast) == 0:
-        print("ERROR: anywhre parse process.")
+    stack = []
 
-    return ast
+    if len(ast) == 0:
+        print("ERROR: Somewhre in parse process.")
+
+    for expr in ast:
+        stack.append(expr)
+
+    operator = stack.pop(0)
+    lhs = stack.pop(0)
+    rhs = stack.pop(0)
+
+    # Recursive evaluate
+    if type(lhs) == list:
+        lhs = eval(lhs)
+
+    if type(rhs) == list:
+        rhs = eval(rhs)
+
+    if operator == '+':
+        return lhs + rhs
+    elif operator == '-':
+        return lhs - rhs
+    elif operator == '*':
+        return lhs * rhs
+    elif operator == '/':
+        return lhs / rhs
+
+    return result
+
+
 
 if __name__ == '__main__':
     while True:
         input_str = input("(lisp)> ")
         tokens = tokenize(input_str)
-        ast = []
-        ast = parse(tokens, ast)
+        ast = parse(tokens)
         ans = eval(ast)
-        print(ans)
+        print(f'ans => {ans}')
