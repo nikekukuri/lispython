@@ -1,25 +1,5 @@
 import copy
 
-def is_reserved_symbol(char):
-    if char == '(':
-        return True
-    elif char == ')':
-        return True
-    elif char == '+':
-        return True
-    elif char == '-':
-        return True
-
-    return False
-
-
-def is_space(char):
-    if char == ' ':
-        return True
-
-    return False
-
-
 def tokenize(input_str):
     tokens = input_str.split(' ')
 
@@ -97,7 +77,6 @@ Number = (int, float)
 #    return ast, i
 
 
-# TODO: implement
 def eval(ast):
     stack = []
 
@@ -126,6 +105,8 @@ def eval(ast):
         return lhs * rhs
     elif operator == '/':
         return lhs / rhs
+    else:
+        SyntaxError("Unexpected token")
 
     return result
 
